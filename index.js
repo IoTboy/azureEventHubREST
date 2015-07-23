@@ -8,7 +8,7 @@ var hubname ='ioteventhub';
 var devicename = 'edison';
 
 // Payload to send
-var payload = '{\"Temperature\":\"37.0\",\"Humidity\":\"0.4\"}';
+var payload = '{\"sensor_id\":\"sensor_536432\", \"Temperature\":\"83.0\"}';
 
 // Shared access key (from Event Hub configuration)
 var my_key_name = 'sendRule';
