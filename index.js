@@ -10,6 +10,7 @@ var devicename = 'edison';
 // Payload to send
 var payload = '{\"SensorID\":\"sensor_34545\", \"Temperature\":\"37.0\"}';
 
+
 // Shared access key (from Event Hub configuration)
 var key_name = 'sendRule';
 var key = 'e7xxZP7Qw1ZSeJftrZH8RYkmEGjggynRtF57cjdIKCA=';
