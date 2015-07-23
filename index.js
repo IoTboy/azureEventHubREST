@@ -8,14 +8,15 @@ var hubname ='ioteventhub';
 var devicename = 'edison';
 
 // Payload to send
-var payload = '{\"Temperature\":\"37.0\",\"Humidity\":\"0.4\"}';
+var payload = '{\"SensorID\":\"sensor_34545\", \"Temperature\":\"37.0\"}';
 
 // Shared access key (from Event Hub configuration)
-var my_key_name = 'sendRule';
-var my_key = 'e7xxZP7Qw1ZSeJftrZH8RYkmEGjggynRtF57cjdIKCA=';
+var key_name = 'sendRule';
+var key = 'e7xxZP7Qw1ZSeJftrZH8RYkmEGjggynRtF57cjdIKCA=';
+
 
 // Full Event Hub publisher URI
-var my_uri = 'https://' + namespace + '.servicebus.windows.net' + '/' + hubname + '/publishers/' + devicename + '/messages';
+var uri = 'https://' + namespace + '.servicebus.windows.net' + '/' + hubname + '/publishers/' + devicename + '/messages';
 
 // Create a SAS token
 // See http://msdn.microsoft.com/library/azure/dn170477.aspx
@@ -34,9 +35,9 @@ function create_sas_token(uri, key_name, key)
     return token;
 }
 
-var my_sas = create_sas_token(my_uri, my_key_name, my_key)
+var sas = create_sas_token(uri, key_name, key)
 
-console.log(my_sas);
+console.log(sas);
 
 // Send the request to the Event Hub
 
@@ -46,7 +47,7 @@ var options = {
   path: '/' + hubname + '/publishers/' + devicename + '/messages',
   method: 'POST',
   headers: {
-    'Authorization': my_sas,
+    'Authorization': sas,
     'Content-Length': payload.length,
     'Content-Type': 'application/atom+xml;type=entry;charset=utf-8'
   }
