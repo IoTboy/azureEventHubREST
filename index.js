@@ -7,9 +7,6 @@ var namespace = 'iotcloudeventhub';
 var hubname ='ioteventhub';
 var devicename = 'edison';
 
-// Payload to send
-var payload = '{\"SensorID\":\"sensor_34545\", \"Temperature\":\"37.0\"}';
-
 
 // Shared access key (from Event Hub configuration)
 var key_name = 'sendRule';
@@ -24,16 +21,16 @@ var uri = 'https://' + namespace + '.servicebus.windows.net' + '/' + hubname + '
 
 function create_sas_token(uri, key_name, key)
 {
-    // Token expires in one hour
-    var expiry = moment().add(1, 'hours').unix();
+  // Token expires in one hour
+  var expiry = moment().add(1, 'hours').unix();
 
-    var string_to_sign = encodeURIComponent(uri) + '\n' + expiry;
-    var hmac = crypto.createHmac('sha256', key);
-    hmac.update(string_to_sign);
-    var signature = hmac.digest('base64');
-    var token = 'SharedAccessSignature sr=' + encodeURIComponent(uri) + '&sig=' + encodeURIComponent(signature) + '&se=' + expiry + '&skn=' + key_name;
+  var string_to_sign = encodeURIComponent(uri) + '\n' + expiry;
+  var hmac = crypto.createHmac('sha256', key);
+  hmac.update(string_to_sign);
+  var signature = hmac.digest('base64');
+  var token = 'SharedAccessSignature sr=' + encodeURIComponent(uri) + '&sig=' + encodeURIComponent(signature) + '&se=' + expiry + '&skn=' + key_name;
 
-    return token;
+  return token;
 }
 
 var sas = create_sas_token(uri, key_name, key)
@@ -42,34 +39,46 @@ console.log(sas);
 
 // Send the request to the Event Hub
 
-var options = {
-  hostname: namespace + '.servicebus.windows.net',
-  port: 443,
-  path: '/' + hubname + '/publishers/' + devicename + '/messages',
-  method: 'POST',
-  headers: {
-    'Authorization': sas,
-    'Content-Length': payload.length,
-    'Content-Type': 'application/atom+xml;type=entry;charset=utf-8'
-  }
-};
+setInterval(sendMessage, 2000);
 
-var req = https.request(options, function(res) {
-  console.log("statusCode: ", res.statusCode);
-  console.log("headers: ", res.headers);
-
-  res.on('data', function(d) {
-    process.stdout.write(d);
+function sendMessage() {
+  // Payload to send
+  var payload = JSON.stringify({
+    devId: "sensor_65757",
+    value : (Math.random() * 30) + 60,
+    timestamp : Date.now()
   });
-});
 
-req.on('error', function(e) {
-  console.error(e);
-});
+  var options = {
+    hostname: namespace + '.servicebus.windows.net',
+    port: 443,
+    path: '/' + hubname + '/publishers/' + devicename + '/messages',
+    method: 'POST',
+    headers: {
+      'Authorization': sas,
+      'Content-Length': payload.length,
+      'Content-Type': 'application/atom+xml;type=entry;charset=utf-8'
+    }
+  };
 
-req.on('success', function(e) {
-  console.log(e);
-});
+  var req = https.request(options, function(res) {
+    console.log("statusCode: ", res.statusCode);
+    console.log("headers: ", res.headers);
 
-req.write(payload);
-req.end();
+    res.on('data', function(d) {
+      process.stdout.write(d);
+    });
+  });
+
+  req.on('error', function(e) {
+    console.error(e);
+  });
+
+  req.on('success', function(e) {
+    console.log(e);
+  });
+
+  req.write(payload);
+  req.end();
+
+}
